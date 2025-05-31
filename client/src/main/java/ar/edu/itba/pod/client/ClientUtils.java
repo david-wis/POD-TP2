@@ -1,18 +1,13 @@
 package ar.edu.itba.pod.client;
 
-import ar.edu.itba.pod.collators.TotalComplaintsByTypeAgencyCollator;
-import ar.edu.itba.pod.mappers.TotalComplaintsByTypeAgencyMapper;
+import ar.edu.itba.pod.client.queries.QueryConsumer;
 import ar.edu.itba.pod.models.Complaint;
-import ar.edu.itba.pod.models.dto.TotalComplaintsByTypeAgencyDTO;
-import ar.edu.itba.pod.reducers.TotalComplaintsByTypeAgencyReducer;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IMap;
-import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 import org.slf4j.Logger;
@@ -21,18 +16,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @SuppressWarnings("deprecation")
 public class ClientUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientUtils.class);
 
-    public static void run(String jobName, BiConsumer<JobTracker, KeyValueSource<String, Complaint>> query) throws IOException, ExecutionException, InterruptedException {
+    public static void run(String jobName, QueryConsumer query) throws IOException, ExecutionException, InterruptedException {
         logger.info("Client Starting ...");
 
         try {
@@ -68,7 +59,7 @@ public class ClientUtils {
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);
             try (KeyValueSource<String, Complaint> keyValueSource = KeyValueSource.fromMap(complaintsMap)) {
-                query.accept(jobTracker, keyValueSource);
+                query.accept(jobTracker, keyValueSource, hazelcastInstance);
             }
         } finally {
             HazelcastClient.shutdownAll();

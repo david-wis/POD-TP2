@@ -32,6 +32,10 @@ public class Complaint implements DataSerializable {
         return agency;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
     @Override
     public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
         objectDataOutput.writeUTF(id);

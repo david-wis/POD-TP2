@@ -4,13 +4,14 @@ import ar.edu.itba.pod.models.TypeAgency;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
-public class TotalComplaintsByTypeAgencyReducer implements ReducerFactory<TypeAgency, Integer, Integer> {
+@SuppressWarnings("deprecation")
+public class TotalComplaintsByTypeAgencyReducerFactory implements ReducerFactory<TypeAgency, Integer, Integer> {
     @Override
     public Reducer<Integer, Integer> newReducer(TypeAgency typeAgency) {
-        return new TypeAgencyReducer();
+        return new TotalComplaintsByTypeAgencyReducer();
     }
 
-    private static class TypeAgencyReducer extends Reducer<Integer, Integer> {
+    private static class TotalComplaintsByTypeAgencyReducer extends Reducer<Integer, Integer> {
         private int total = 0;
 
         @Override
