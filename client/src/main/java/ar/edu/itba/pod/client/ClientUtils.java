@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("deprecation")
@@ -42,18 +47,15 @@ public class ClientUtils {
             CsvReader.readFile("/home/david/Desktop/pod-tp2/archivos_pod/pod/testRequestsNYC.csv",
                     s -> {
                         Complaint.ComplaintBuilder builder = new Complaint.ComplaintBuilder();
-                        try {
-                            builder.setId(s[0])
-                                   .setNeighborhood(s[6])
-                                   .setLongitude(Float.parseFloat(s[7]))
-                                   .setLatitude(Float.parseFloat(s[8]))
-                                   .setDate(new SimpleDateFormat("yyyy-MM-dd").parse(s[1]))
-                                   .setStreet(s[4])
-                                   .setType(s[3])
-                                   .setAgency(s[2]);
-                        } catch (ParseException p) {
-                            logger.error("Error parsing date: {}", s[1], p);
-                        }
+                        builder.setId(s[0])
+                               .setNeighborhood(s[6])
+                               .setLongitude(Float.parseFloat(s[7]))
+                               .setLatitude(Float.parseFloat(s[8]))
+                               .setDate(YearMonth.parse(s[1].substring(0, 7)))
+                               .setStreet(s[4])
+                               .setType(s[3])
+                               .setOpen(!s[5].equals("Closed"))
+                               .setAgency(s[2]);
                         return builder.build();
                     }, c -> complaintsMap.put(c.getId(), c));
 
