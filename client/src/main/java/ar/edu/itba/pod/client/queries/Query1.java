@@ -1,6 +1,8 @@
 package ar.edu.itba.pod.client.queries;
 
+import ar.edu.itba.pod.client.ArgumentParser;
 import ar.edu.itba.pod.client.ClientUtils;
+import ar.edu.itba.pod.client.CsvManager;
 import ar.edu.itba.pod.collators.TotalComplaintsByTypeAgencyCollator;
 import ar.edu.itba.pod.mappers.TotalComplaintsByTypeAgencyMapper;
 import ar.edu.itba.pod.models.dto.TotalComplaintsByTypeAgencyDTO;
@@ -10,17 +12,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
+import static ar.edu.itba.pod.client.Constants.OUT_PATH_ARG;
+import static ar.edu.itba.pod.client.Constants.QUERY1_HEADERS;
 import static java.lang.System.exit;
 
 public class Query1 {
 
     private static final Logger logger = LoggerFactory.getLogger(Query1.class);
 
-    // TODO: Remove throws
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+    public static void main(String[] args) {
         ClientUtils.run("TotalComplaintsByTypeAgency", (jobTracker, keyValueSource, hazelcastInstance) -> {
             ICompletableFuture<List<TotalComplaintsByTypeAgencyDTO>> futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new TotalComplaintsByTypeAgencyMapper())
@@ -37,12 +43,12 @@ public class Query1 {
                 logger.error("Error executing the job: {}", e.getMessage(), e);
                 exit(1);
             }
-            result.forEach(totalComplaintsByTypeAgencyDTO -> {
-                logger.info("Total: {}, Type: {}, Agency: {}",
-                        totalComplaintsByTypeAgencyDTO.total(),
-                        totalComplaintsByTypeAgencyDTO.type(),
-                        totalComplaintsByTypeAgencyDTO.agency());
-            });
+
+            final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
+            final Path outputPath = Paths.get(output, "query1.txt");
+
+            Stream<String> linesStream = result.stream().map(t -> String.format("%s;%s;%d", t.type(), t.agency(), t.total()));
+            CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY1_HEADERS), linesStream));
         });
     }
 }
