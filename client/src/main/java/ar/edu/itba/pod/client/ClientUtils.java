@@ -14,13 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("deprecation")
@@ -56,9 +50,7 @@ public class ClientUtils {
                                .setType(s[3])
                                .setOpen(!s[5].equals("Closed"))
                                .setAgency(s[2]);
-                        Complaint c = builder.build();
-                        return c;
-//                        return builder.build();
+                        return builder.build();
                     }, c -> complaintsMap.put(c.getId(), c));
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);

@@ -8,6 +8,6 @@ import com.hazelcast.mapreduce.Mapper;
 public class TotalTypeCountMapper implements Mapper<String, Complaint, String, Boolean> {
     @Override
     public void map(String s, Complaint complaint, Context<String, Boolean> context) {
-        context.emit(complaint.getStreet(), true);
+        context.emit(complaint.getType(), true);
     }
 }
