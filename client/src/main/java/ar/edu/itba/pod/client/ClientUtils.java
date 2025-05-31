@@ -44,7 +44,7 @@ public class ClientUtils {
 
             IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap("complaints");
             // TODO: Add try catch for IOException and InterruptedException
-            CsvReader.readFile("/home/david/Desktop/pod-tp2/archivos_pod/pod/testRequestsNYC.csv",
+            CsvReader.readFile("/Users/abrilvilamowski/Desktop/POD-TP2/archivos_testing/hola.csv",
                     s -> {
                         Complaint.ComplaintBuilder builder = new Complaint.ComplaintBuilder();
                         builder.setId(s[0])
@@ -56,7 +56,9 @@ public class ClientUtils {
                                .setType(s[3])
                                .setOpen(!s[5].equals("Closed"))
                                .setAgency(s[2]);
-                        return builder.build();
+                        Complaint c = builder.build();
+                        return c;
+//                        return builder.build();
                     }, c -> complaintsMap.put(c.getId(), c));
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);

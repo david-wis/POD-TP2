@@ -54,6 +54,18 @@ public class Complaint implements DataSerializable {
         return open;
     }
 
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
 
     @Override
     public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
