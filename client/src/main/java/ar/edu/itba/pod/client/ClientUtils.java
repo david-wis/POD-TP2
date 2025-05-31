@@ -19,15 +19,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @SuppressWarnings("deprecation")
 public class ClientUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientUtils.class);
 
-    public static void run(String jobName) throws IOException, ExecutionException, InterruptedException {
+    public static void run(String jobName, BiConsumer<JobTracker, KeyValueSource<String, Complaint>> query) throws IOException, ExecutionException, InterruptedException {
         logger.info("Client Starting ...");
 
         try {
@@ -44,22 +49,26 @@ public class ClientUtils {
             IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap("complaints");
             // TODO: Add try catch for IOException and InterruptedException
             CsvReader.readFile("/home/david/Desktop/pod-tp2/archivos_pod/pod/testRequestsNYC.csv",
-                    s -> new Complaint(s[0], s[2], s[3]), c -> complaintsMap.put(c.getId(), c));
+                    s -> {
+                        Complaint.ComplaintBuilder builder = new Complaint.ComplaintBuilder();
+                        try {
+                            builder.setId(s[0])
+                                   .setNeighborhood(s[6])
+                                   .setLongitude(Float.parseFloat(s[7]))
+                                   .setLatitude(Float.parseFloat(s[8]))
+                                   .setDate(new SimpleDateFormat("yyyy-MM-dd").parse(s[1]))
+                                   .setStreet(s[4])
+                                   .setType(s[3])
+                                   .setAgency(s[2]);
+                        } catch (ParseException p) {
+                            logger.error("Error parsing date: {}", s[1], p);
+                        }
+                        return builder.build();
+                    }, c -> complaintsMap.put(c.getId(), c));
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);
             try (KeyValueSource<String, Complaint> keyValueSource = KeyValueSource.fromMap(complaintsMap)) {
-                ICompletableFuture<List<TotalComplaintsByTypeAgencyDTO>> futureResponse = jobTracker.newJob(keyValueSource)
-                        .mapper(new TotalComplaintsByTypeAgencyMapper())
-                        .reducer(new TotalComplaintsByTypeAgencyReducer())
-                        .submit(new TotalComplaintsByTypeAgencyCollator());
-
-                List<TotalComplaintsByTypeAgencyDTO> result = futureResponse.get();
-                result.forEach(totalComplaintsByTypeAgencyDTO -> {
-                    logger.info("Total: {}, Type: {}, Agency: {}",
-                            totalComplaintsByTypeAgencyDTO.getTotal(),
-                            totalComplaintsByTypeAgencyDTO.getType(),
-                            totalComplaintsByTypeAgencyDTO.getAgency());
-                });
+                query.accept(jobTracker, keyValueSource);
             }
         } finally {
             HazelcastClient.shutdownAll();
