@@ -8,7 +8,6 @@ import ar.edu.itba.pod.mappers.TypeStreetMapper;
 import ar.edu.itba.pod.models.Complaint;
 import ar.edu.itba.pod.models.TypeStreet;
 import ar.edu.itba.pod.reducers.TotalTypeCountReducerFactory;
-import ar.edu.itba.pod.reducers.TypePercentageByStreetReducer;
 import ar.edu.itba.pod.reducers.TypeStreetUniqueReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IMap;

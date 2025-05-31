@@ -20,7 +20,7 @@ public class Query3 {
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         final int WINDOW_SIZE = 3;
 
-        ClientUtils.run("AgencyDateMovingAverage", (jobTracker, keyValueSource) -> {
+        ClientUtils.run("AgencyDateMovingAverage", (jobTracker, keyValueSource, hazelcastInstance) -> {
             ICompletableFuture<List<AgencyDateMovingAverageDTO> > futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new AgencyDateMovingAverageMapper(WINDOW_SIZE))
                     .reducer(new AgencyDateMovingAverageReducerFactory(WINDOW_SIZE))
