@@ -18,14 +18,16 @@ public class AgencyDateMovingAverageReducerFactory implements ReducerFactory<Age
 
     @Override
     public Reducer<Long, BigDecimal> newReducer(AgencyDate agencyDate) {
-        return new AgencyDateMovingAverageReducer(windowSize);
+        return new AgencyDateMovingAverageReducer(agencyDate, windowSize);
     }
 
     private static class AgencyDateMovingAverageReducer extends Reducer<Long, BigDecimal> {
+        private final AgencyDate agencyDate;
         private final int windowSize;
         private long total;
 
-        public AgencyDateMovingAverageReducer(int windowSize) {
+        public AgencyDateMovingAverageReducer(AgencyDate agencyDate, int windowSize) {
+            this.agencyDate = agencyDate;
             this.windowSize = windowSize;
         }
 
@@ -41,7 +43,8 @@ public class AgencyDateMovingAverageReducerFactory implements ReducerFactory<Age
 
         @Override
         public BigDecimal finalizeReduce() {
-            return BigDecimal.valueOf(total).divide(BigDecimal.valueOf(windowSize), 2, RoundingMode.DOWN);
+            int month = agencyDate.getMonth();
+            return BigDecimal.valueOf(total).divide(BigDecimal.valueOf(Math.min(windowSize, month)), 2, RoundingMode.DOWN);
         }
     }
 }

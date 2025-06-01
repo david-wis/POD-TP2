@@ -5,7 +5,9 @@ import com.hazelcast.core.Hazelcast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class Server {
 
@@ -27,7 +29,7 @@ public class Server {
         JoinConfig joinConfig = new JoinConfig().setMulticastConfig(multicastConfig);
 
         InterfacesConfig interfacesConfig = new InterfacesConfig()
-                .setInterfaces(Collections.singletonList("127.0.0.*")).setEnabled(true);
+                .setInterfaces(getInterfacesArg()).setEnabled(true);
 
         NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig).setJoin(joinConfig);
 
@@ -42,6 +44,18 @@ public class Server {
 
         // Start cluster
         Hazelcast.newHazelcastInstance(config);
+    }
+
+
+    public static Collection<String> getInterfacesArg() {
+        String arg = System.getProperty("interfaces");
+
+        if (arg == null || arg.isEmpty()) {
+            logger.warn("No interfaces provided, using default: 127.0.0.*");
+            return Collections.singletonList("127.0.0.*");
+        }
+        logger.info("Using interfaces provided: {}", arg);
+        return List.of(arg.split(";"));
     }
 
 }

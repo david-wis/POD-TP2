@@ -17,8 +17,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -77,10 +79,23 @@ public class ClientUtils {
 
             IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap("complaints");
             customLogger.info("Inicio de la lectura del archivo de entrada: " + inputPath);
+            Map<String, Complaint> batchMap = new HashMap<>();
+
+            AtomicInteger i = new AtomicInteger();
             CsvManager.readFile(inputPath,
                     s -> ComplaintMappers.mappers.get(city).apply(s),
-                    c -> complaintsMap.put(c.getId(), c)
+                    c -> {
+                        i.getAndIncrement();
+                        batchMap.put(c.getId(), c);
+                        if (i.get() % 100000 == 0) {
+                            complaintsMap.putAll(batchMap);
+                            batchMap.clear();
+                        }
+                    }
             );
+            if (!batchMap.isEmpty()) {
+                complaintsMap.putAll(batchMap);
+            }
             customLogger.info("Fin de la lectura del archivo de entrada: " + inputPath);
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);

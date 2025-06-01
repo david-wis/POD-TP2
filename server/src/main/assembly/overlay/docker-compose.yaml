@@ -1,0 +1,68 @@
+services:
+  hazelcast-node1:
+    build:
+      context: .
+    command:
+      - "-Dinterfaces=172.28.0.*"
+    container_name: hazelcast-node1
+    networks:
+      hazelcast-net:
+        ipv4_address: 172.28.0.2
+    ports:
+      - "5701:5701"
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms512m -Xmx2048m"
+
+  hazelcast-node2:
+    build:
+      context: .
+    command:
+      - "-Dinterfaces=172.28.0.*"
+    container_name: hazelcast-node2
+    networks:
+      hazelcast-net:
+        ipv4_address: 172.28.0.3
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms512m -Xmx2048m"
+
+  hazelcast-node3:
+    build:
+      context: .
+    command:
+      - "-Dinterfaces=172.28.0.*"
+    container_name: hazelcast-node3
+    networks:
+      hazelcast-net:
+        ipv4_address: 172.28.0.4
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms512m -Xmx2048m"
+
+  hazelcast-node4:
+    build: .
+    command:
+      - "-Dinterfaces=172.28.0.*"
+    container_name: hazelcast-node4
+    networks:
+      hazelcast-net:
+        ipv4_address: 172.28.0.5
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms512m -Xmx2048m"
+
+  hazelcast-node5:
+    build:
+      context: .
+    command:
+      - "-Dinterfaces=172.28.0.*"
+    container_name: hazelcast-node5
+    networks:
+      hazelcast-net:
+        ipv4_address: 172.28.0.6
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms512m -Xmx2048m"
+
+networks:
+  hazelcast-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
