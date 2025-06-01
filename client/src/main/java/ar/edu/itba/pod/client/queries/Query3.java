@@ -29,8 +29,8 @@ public class Query3 {
 
         final int windowSize = ArgumentParser.getIntegerArg(W_ARG, W_MIN, W_MAX);
 
-        ClientUtils.run("AgencyDateMovingAverage", (jobTracker, keyValueSource, hazelcastInstance) -> {
-            logger.info("Inicio del trabajo map/reduce");
+        ClientUtils.run("AgencyDateMovingAverage", (jobTracker, keyValueSource, hazelcastInstance, customLogger) -> {
+            customLogger.info("Inicio del trabajo map/reduce");
             ICompletableFuture<List<AgencyDateMovingAverageDTO> > futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new AgencyDateMovingAverageMapper(windowSize))
                     .combiner(new AgencyDateMovingAverageCombinerFactory())
@@ -38,7 +38,7 @@ public class Query3 {
                     .submit(new AgencyDateMovingAverageCollator());
             List<AgencyDateMovingAverageDTO> result = null;
             result = futureResponse.get();
-            logger.info("Inicio del trabajo map/reduce");
+            customLogger.info("Inicio del trabajo map/reduce");
 
             final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
             final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, 3));

@@ -7,11 +7,12 @@ import com.hazelcast.mapreduce.KeyValueSource;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 @FunctionalInterface
 public interface QueryConsumer{
 
     @SuppressWarnings("deprecation")
-    void accept(JobTracker jobTracker, KeyValueSource<String, Complaint> inputKeyValueSource, HazelcastInstance hazelcastInstance) throws InterruptedException, ExecutionException, IOException;
+    void accept(JobTracker jobTracker, KeyValueSource<String, Complaint> inputKeyValueSource, HazelcastInstance hazelcastInstance, Logger customLogger) throws InterruptedException, ExecutionException, IOException;
 
 }

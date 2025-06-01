@@ -32,7 +32,7 @@ public class Query4 {
     @SuppressWarnings("deprecation")
     public static void main(String[] args) throws IOException, CancellationException, InterruptedException, ExecutionException {
         ClientUtils.run("TotalTypeCount",
-                (jobTracker, inputKeyValueSource, hazelcastInstance) -> {
+                (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
                 ICompletableFuture<Long> futureTotalTypeCount = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TotalTypeCountMapper())
                         .combiner(new TotalTypeCountCombinerFactory())

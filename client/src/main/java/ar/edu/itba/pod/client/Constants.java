@@ -36,5 +36,8 @@ public class Constants {
     public static final String SERVICE_REQUESTS_FILE_TEMPLATE = "serviceRequests%s.csv";
     public static final String SERVICE_TYPES_FILE_TEMPLATE = "serviceTypes%s.csv";
 
+    // Logger
+    public static final String CUSTOM_LOGGER_NAME = "CustomLogger";
+
 
 }

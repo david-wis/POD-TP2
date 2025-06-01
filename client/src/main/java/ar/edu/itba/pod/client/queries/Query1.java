@@ -24,15 +24,15 @@ public class Query1 {
     private static final Logger logger = LoggerFactory.getLogger(Query1.class);
 
     public static void main(String[] args) {
-        ClientUtils.run("TotalComplaintsByTypeAgency", (jobTracker, keyValueSource, hazelcastInstance) -> {
-            logger.info("Inicio del trabajo map/reduce");
+        ClientUtils.run("TotalComplaintsByTypeAgency", (jobTracker, keyValueSource, hazelcastInstance, customLogger) -> {
+            customLogger.info("Inicio del trabajo map/reduce");
             ICompletableFuture<List<TotalComplaintsByTypeAgencyDTO>> futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new TotalComplaintsByTypeAgencyMapper())
                     .combiner(new TotalComplaintsByTypeAgencyCombinerFactory())
                     .reducer(new TotalComplaintsByTypeAgencyReducerFactory())
                     .submit(new TotalComplaintsByTypeAgencyCollator());
             List<TotalComplaintsByTypeAgencyDTO> result = futureResponse.get();
-            logger.info("Fin del trabajo map/reduce");
+            customLogger.info("Fin del trabajo map/reduce");
 
             final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
             final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, 1));

@@ -37,28 +37,28 @@ public class Query2 {
     public static void main(String[] args) {
         final float q = ArgumentParser.getFloatArg(Q_ARG, Q_MIN, Q_MAX);
 
-        ClientUtils.run("MostPopularType", (jobTracker, inputKeyValueSource, hazelcastInstance) -> {
-            logger.info("Inicio del trabajo 1 map/reduce");
+        ClientUtils.run("MostPopularType", (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+            customLogger.info("Inicio del trabajo 1 map/reduce");
             ICompletableFuture<Map<NeighborhoodQuadType, Long>> future1 = jobTracker.newJob(inputKeyValueSource)
                     .mapper(new NeighborhoodQuadTypeMapper(q))
                     .combiner(new NeighborhoodQuadTypeCountCombinerFactory())
                     .reducer(new NeighborhoodQuadTypeCountReducerFactory())
                     .submit();
             Map<NeighborhoodQuadType, Long> countMap = future1.get();
-            logger.info("Fin del trabajo 1 map/reduce");
+            customLogger.info("Fin del trabajo 1 map/reduce");
 
             IMap<NeighborhoodQuadType, Long> intermediateMap = hazelcastInstance.getMap("neighborhoodQuadTypeCountMap");
             intermediateMap.putAll(countMap);
 
             try (KeyValueSource<NeighborhoodQuadType, Long> kvSource = KeyValueSource.fromMap(intermediateMap)) {
-                logger.info("Inicio del trabajo 2 map/reduce");
+                customLogger.info("Inicio del trabajo 2 map/reduce");
                 ICompletableFuture<List<NeighborhoodQuadTypeMaxCountDTO>> future2 = jobTracker.newJob(kvSource)
                         .mapper(new MostPopularTypeMapper())
                         .combiner(new MaxTypeCombinerFactory())
                         .reducer(new MaxTypeReducerFactory())
                         .submit(new NeighborhoodQuadTypeMaxCountCollator());
                 List<NeighborhoodQuadTypeMaxCountDTO> result = future2.get();
-                logger.info("Fin del trabajo 2 map/reduce");
+                customLogger.info("Fin del trabajo 2 map/reduce");
 
                 final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
                 final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, 2));
