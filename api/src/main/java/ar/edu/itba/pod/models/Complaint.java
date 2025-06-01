@@ -11,8 +11,8 @@ import java.time.YearMonth;
 public class Complaint implements DataSerializable {
     private String id;
     private String neighborhood;
-    private float longitude;
-    private float latitude;
+    private double longitude;
+    private double latitude;
     private YearMonth date;
     private String street;
     private boolean open;
@@ -58,11 +58,11 @@ public class Complaint implements DataSerializable {
         return neighborhood;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
@@ -73,8 +73,8 @@ public class Complaint implements DataSerializable {
         objectDataOutput.writeUTF(type);
         objectDataOutput.writeUTF(agency);
         objectDataOutput.writeUTF(neighborhood);
-        objectDataOutput.writeFloat(longitude);
-        objectDataOutput.writeFloat(latitude);
+        objectDataOutput.writeDouble(longitude);
+        objectDataOutput.writeDouble(latitude);
         objectDataOutput.writeObject(date);
         objectDataOutput.writeUTF(street);
         objectDataOutput.writeBoolean(open);
@@ -86,8 +86,8 @@ public class Complaint implements DataSerializable {
         this.type = objectDataInput.readUTF();
         this.agency = objectDataInput.readUTF();
         this.neighborhood = objectDataInput.readUTF();
-        this.longitude = objectDataInput.readFloat();
-        this.latitude = objectDataInput.readFloat();
+        this.longitude = objectDataInput.readDouble();
+        this.latitude = objectDataInput.readDouble();
         this.date = objectDataInput.readObject();
         this.street = objectDataInput.readUTF();
         this.open = objectDataInput.readBoolean();
@@ -125,12 +125,12 @@ public class Complaint implements DataSerializable {
             return this;
         }
 
-        public ComplaintBuilder setLongitude(float longitude) {
+        public ComplaintBuilder setLongitude(double longitude) {
             this.complaint.longitude = longitude;
             return this;
         }
 
-        public ComplaintBuilder setLatitude(float latitude) {
+        public ComplaintBuilder setLatitude(double latitude) {
             this.complaint.latitude = latitude;
             return this;
         }
