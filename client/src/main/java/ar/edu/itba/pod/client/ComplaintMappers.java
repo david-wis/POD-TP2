@@ -14,8 +14,8 @@ public class ComplaintMappers {
         Complaint.ComplaintBuilder builder = new Complaint.ComplaintBuilder();
         builder.setId(s[0])
                 .setNeighborhood(s[6])
-                .setLatitude(Float.parseFloat(s[7]))
-                .setLongitude(Float.parseFloat(s[8]))
+                .setLatitude(Double.parseDouble(s[7]))
+                .setLongitude(Double.parseDouble(s[8]))
                 .setDate(YearMonth.parse(s[1].substring(0, 7)))
                 .setStreet(s[4].replaceFirst("^\\d+ ", ""))
                 .setType(s[3])
