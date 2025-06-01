@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.YearMonth;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -44,19 +43,12 @@ public class ClientUtils {
             final Path inputPath = Paths.get(inPath, String.format(SERVICE_REQUESTS_FILE_TEMPLATE, city));
 
             IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap("complaints");
-            CsvManager.readFile(inputPath, s -> {
-                        Complaint.ComplaintBuilder builder = new Complaint.ComplaintBuilder();
-                        builder.setId(s[0])
-                                .setNeighborhood(s[6])
-                                .setLongitude(Float.parseFloat(s[7]))
-                                .setLatitude(Float.parseFloat(s[8]))
-                                .setDate(YearMonth.parse(s[1].substring(0, 7)))
-                                .setStreet(s[4])
-                                .setType(s[3])
-                                .setOpen(!s[5].equals("Closed"))
-                                .setAgency(s[2]);
-                        return builder.build();
-            }, c -> complaintsMap.put(c.getId(), c));
+            logger.info("Inicio de la lectura del archivo de entrada: {}", inputPath);
+            CsvManager.readFile(inputPath,
+                    s -> ComplaintMappers.mappers.get(city).apply(s),
+                    c -> complaintsMap.put(c.getId(), c)
+            );
+            logger.info("Fin de la lectura del archivo de entrada: {}", inputPath);
 
             JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);
             try (KeyValueSource<String, Complaint> keyValueSource = KeyValueSource.fromMap(complaintsMap)) {

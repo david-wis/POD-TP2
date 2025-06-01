@@ -10,6 +10,12 @@ public class Constants {
     public static final String W_ARG = "w";
     public static final String NEIGHBOURHOOD_ARG = "neighbourhood";
 
+    public static final float Q_MIN = 0.0f;
+    public static final float Q_MAX = 1.0f;
+
+    public static final int W_MIN = 1;
+    public static final int W_MAX = 12;
+
     // Available cities
     public static final String NYC_CITY = "NYC";
     public static final String CHI_CITY = "CHI";

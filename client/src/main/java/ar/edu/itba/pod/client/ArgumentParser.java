@@ -21,10 +21,28 @@ public class ArgumentParser {
         }
     }
 
-    public static int getIntegerArg(final String key) {
+    public static int getIntegerArg(final String key, final int min, final int max) {
         try {
             final String arg = getStringArg(key);
-            return Integer.parseInt(arg);
+            int intArg = Integer.parseInt(arg);
+            if (intArg < min || intArg > max) {
+                throw new IllegalArgumentException("Argument out of range: " + key + ". Expected between " + min + " and " + max);
+            }
+            return intArg;
+        }
+        catch (final NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid argument: " + key);
+        }
+    }
+
+    public static float getFloatArg(final String key, final float min, final float max) {
+        try {
+            final String arg = getStringArg(key);
+            float floatArg = Float.parseFloat(arg);
+            if (floatArg < min || floatArg > max) {
+                throw new IllegalArgumentException("Argument out of range: " + key + ". Expected between " + min + " and " + max);
+            }
+            return floatArg;
         }
         catch (final NumberFormatException e) {
             throw new IllegalArgumentException("Invalid argument: " + key);
