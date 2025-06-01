@@ -18,26 +18,27 @@ import com.hazelcast.mapreduce.KeyValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import static ar.edu.itba.pod.Globals.MOST_POPULAR_TYPE_JOB_TRACKER_NAME;
+import static ar.edu.itba.pod.Globals.NEIGHBOURHOOD_TYPE_COUNT_MAP_NAME;
 import static ar.edu.itba.pod.client.Constants.*;
-import static java.lang.System.exit;
 
 @SuppressWarnings("deprecation")
 public class Query2 {
 
     private static final Logger logger = LoggerFactory.getLogger(Query2.class);
+    private static final int QUERY_NUM = 2;
 
     public static void main(String[] args) {
         final float q = ArgumentParser.getFloatArg(Q_ARG, Q_MIN, Q_MAX);
 
-        ClientUtils.run("MostPopularType", (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+        ClientUtils.run(MOST_POPULAR_TYPE_JOB_TRACKER_NAME , QUERY_NUM, (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+            ClientUtils.loadTypes(hazelcastInstance);
             customLogger.info("Inicio del trabajo 1 map/reduce");
             ICompletableFuture<Map<NeighborhoodQuadType, Long>> future1 = jobTracker.newJob(inputKeyValueSource)
                     .mapper(new NeighborhoodQuadTypeMapper(q))
@@ -47,7 +48,7 @@ public class Query2 {
             Map<NeighborhoodQuadType, Long> countMap = future1.get();
             customLogger.info("Fin del trabajo 1 map/reduce");
 
-            IMap<NeighborhoodQuadType, Long> intermediateMap = hazelcastInstance.getMap("neighborhoodQuadTypeCountMap");
+            IMap<NeighborhoodQuadType, Long> intermediateMap = hazelcastInstance.getMap(NEIGHBOURHOOD_TYPE_COUNT_MAP_NAME);
             intermediateMap.putAll(countMap);
 
             try (KeyValueSource<NeighborhoodQuadType, Long> kvSource = KeyValueSource.fromMap(intermediateMap)) {
@@ -61,7 +62,7 @@ public class Query2 {
                 customLogger.info("Fin del trabajo 2 map/reduce");
 
                 final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
-                final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, 2));
+                final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, QUERY_NUM));
                 Stream<String> linesStream = result.stream().map(dto -> String.format("%s;%d;%d;%s", dto.neighborhood(), dto.quadLat(), dto.quadLon(), dto.type()));
                 CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY2_HEADERS), linesStream));
             }

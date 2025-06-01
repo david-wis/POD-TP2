@@ -5,14 +5,14 @@ import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
 @SuppressWarnings("deprecation")
-public class TotalComplaintsByTypeAgencyReducerFactory implements ReducerFactory<TypeAgency, Integer, Integer> {
+public class TotalComplaintsByTypeAgencyReducerFactory implements ReducerFactory<TypeAgency, Long, Long> {
     @Override
-    public Reducer<Integer, Integer> newReducer(TypeAgency typeAgency) {
+    public Reducer<Long, Long> newReducer(TypeAgency typeAgency) {
         return new TotalComplaintsByTypeAgencyReducer();
     }
 
-    private static class TotalComplaintsByTypeAgencyReducer extends Reducer<Integer, Integer> {
-        private int total = 0;
+    private static class TotalComplaintsByTypeAgencyReducer extends Reducer<Long, Long> {
+        private long total = 0;
 
         @Override
         public void beginReduce() {
@@ -20,13 +20,13 @@ public class TotalComplaintsByTypeAgencyReducerFactory implements ReducerFactory
         }
 
         @Override
-        public void reduce(Integer value) {
+        public void reduce(Long value) {
             total += value;
         }
 
 
         @Override
-        public Integer finalizeReduce() {
+        public Long finalizeReduce() {
             return total;
         }
     }

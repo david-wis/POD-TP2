@@ -22,7 +22,7 @@ public class NeighborhoodQuadTypeMaxCountCollator implements Collator<Map.Entry<
                         entry.getKey().getQuadLat(),
                         entry.getKey().getQuadLon(),
                         entry.getValue().getType()))
-                .sorted(Comparator.comparing(NeighborhoodQuadTypeMaxCountDTO::neighborhood).reversed()
+                .sorted(Comparator.comparing(NeighborhoodQuadTypeMaxCountDTO::neighborhood)
                         .thenComparing(NeighborhoodQuadTypeMaxCountDTO::quadLat)
                         .thenComparing(NeighborhoodQuadTypeMaxCountDTO::quadLon))
                 .collect(Collectors.toList());

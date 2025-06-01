@@ -13,9 +13,9 @@ public class TypeAgency implements DataSerializable {
 
     public TypeAgency() {}
 
-    public TypeAgency(final Complaint complaint) {
-        this.type = complaint.getType();
-        this.agency = complaint.getAgency();
+    public TypeAgency(String type, String agency) {
+        this.type = type;
+        this.agency = agency;
     }
 
     public String getType() {

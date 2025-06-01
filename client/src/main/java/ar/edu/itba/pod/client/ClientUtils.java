@@ -7,7 +7,6 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -27,6 +26,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 
+import static ar.edu.itba.pod.Globals.*;
 import static ar.edu.itba.pod.client.Constants.*;
 
 @SuppressWarnings("deprecation")
@@ -35,9 +35,9 @@ public class ClientUtils {
     private static final Logger logger = LoggerFactory.getLogger(ClientUtils.class);
 
     private static java.util.logging.Logger setupLogger(Path outputPath) throws IOException {
-        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CUSTOM_LOGGER_NAME);
-        logger.setUseParentHandlers(false);
-        logger.setLevel(Level.ALL);
+        java.util.logging.Logger customLogger = java.util.logging.Logger.getLogger(CUSTOM_LOGGER_NAME);
+        customLogger.setUseParentHandlers(false);
+        customLogger.setLevel(Level.ALL);
 
         Formatter formatter = new java.util.logging.SimpleFormatter() {
                 @Override
@@ -47,16 +47,16 @@ public class ClientUtils {
                     return String.format("%s [%s] %s%n", date, record.getLevel(), record.getMessage());
                 }
         };
-        logger.addHandler(new FileHandler(outputPath.toString(), true) {{
+        customLogger.addHandler(new FileHandler(outputPath.toString(), true) {{
             setFormatter(formatter);
         }});
-        logger.addHandler(new ConsoleHandler() {{
+        customLogger.addHandler(new ConsoleHandler() {{
             setFormatter(formatter);
         }});
-        return logger;
+        return customLogger;
     }
 
-    public static void run(String jobName, QueryConsumer query) {
+    public static void run(String jobTrackerName, int queryNumber, QueryConsumer query) {
         logger.info("Client Starting ...");
 
         try {
@@ -75,10 +75,10 @@ public class ClientUtils {
             final String city = ArgumentParser.getStringArg(CITY_ARG);
             final Path inputPath = Paths.get(inPath, String.format(SERVICE_REQUESTS_FILE_TEMPLATE, city));
 
-            final Path outFile = Paths.get(outPath, String.format(TIME_FILE_TEMPLATE, 1)); // TODO: Pass number as argument
+            final Path outFile = Paths.get(outPath, String.format(TIME_FILE_TEMPLATE, queryNumber));
             java.util.logging.Logger customLogger = setupLogger(outFile);
 
-            IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap("complaints");
+            IMap<String, Complaint> complaintsMap = hazelcastInstance.getMap(COMPLAINTS_MAP_NAME);
             customLogger.info("Inicio de la lectura del archivo de entrada: " + inputPath);
             Map<String, Complaint> batchMap = new HashMap<>();
 
@@ -88,21 +88,25 @@ public class ClientUtils {
                     c -> {
                         i.getAndIncrement();
                         batchMap.put(c.getId(), c);
-                        if (i.get() % 100000 == 0) {
+                        if (i.get() % COMPLAINT_BATCH_SIZE == 0) {
                             complaintsMap.putAll(batchMap);
                             batchMap.clear();
                         }
                     }
             );
-            if (!batchMap.isEmpty()) {
-                complaintsMap.putAll(batchMap);
-            }
+            if (!batchMap.isEmpty()) complaintsMap.putAll(batchMap);
             customLogger.info("Fin de la lectura del archivo de entrada: " + inputPath);
 
-            JobTracker jobTracker = hazelcastInstance.getJobTracker(jobName);
+            JobTracker jobTracker = hazelcastInstance.getJobTracker(jobTrackerName);
             try (KeyValueSource<String, Complaint> keyValueSource = KeyValueSource.fromMap(complaintsMap)) {
                 query.accept(jobTracker, keyValueSource, hazelcastInstance, customLogger);
             }
+
+            // Deallocate resources
+            complaintsMap.destroy();
+            IMap<String, String> typeMap = hazelcastInstance.getMap(TYPES_MAP_NAME);
+            if (typeMap != null) typeMap.destroy();
+
         } catch (IllegalArgumentException e) {
             logger.error("Invalid argument: {}", e.getMessage());
         } catch (IOException e) {
@@ -118,8 +122,11 @@ public class ClientUtils {
         final String inPath = ArgumentParser.getStringArg(IN_PATH_ARG);
         final String city = ArgumentParser.getStringArg(CITY_ARG);
         final Path inputPath = Paths.get(inPath, String.format(SERVICE_TYPES_FILE_TEMPLATE, city));
-        IList<String> typeList = hazelcastInstance.getList("types");
-        CsvManager.readFile(inputPath,s -> s[0], typeList::add);
+        IMap<String, String> typeMap = hazelcastInstance.getMap(TYPES_MAP_NAME);
+        CsvManager.readFile(inputPath,
+                s -> s,
+                ComplaintMappers.complaintTypeConsumers.get(city).apply(typeMap)
+        );
     }
 
 }

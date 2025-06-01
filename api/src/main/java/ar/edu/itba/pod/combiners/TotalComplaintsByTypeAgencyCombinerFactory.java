@@ -5,15 +5,15 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 
 @SuppressWarnings("deprecation")
-public class TotalComplaintsByTypeAgencyCombinerFactory implements CombinerFactory<TypeAgency, Integer, Integer> {
+public class TotalComplaintsByTypeAgencyCombinerFactory implements CombinerFactory<TypeAgency, Long, Long> {
 
     @Override
-    public Combiner<Integer, Integer> newCombiner(TypeAgency key) {
+    public Combiner<Long, Long> newCombiner(TypeAgency key) {
         return new TotalComplaintsByTypeAgencyCombiner();
     }
 
-    private static class TotalComplaintsByTypeAgencyCombiner extends Combiner<Integer, Integer> {
-        private int total;
+    private static class TotalComplaintsByTypeAgencyCombiner extends Combiner<Long, Long> {
+        private long total;
 
         @Override
         public void reset() {
@@ -21,12 +21,12 @@ public class TotalComplaintsByTypeAgencyCombinerFactory implements CombinerFacto
         }
 
         @Override
-        public void combine(Integer value) {
+        public void combine(Long value) {
             total += value;
         }
 
         @Override
-        public Integer finalizeChunk() {
+        public Long finalizeChunk() {
             return total;
         }
     }

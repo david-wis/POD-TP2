@@ -29,14 +29,17 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.stream.Stream;
 
+import static ar.edu.itba.pod.Globals.TOTAL_TYPE_COUNT_JOB_TRACKER_NAME;
+import static ar.edu.itba.pod.Globals.TYPE_STREET_MAP_NAME;
 import static ar.edu.itba.pod.client.Constants.*;
 
 public class Query4 {
     private static final Logger logger = LoggerFactory.getLogger(Query4.class);
+    private static final int QUERY_NUM = 4;
 
     @SuppressWarnings("deprecation")
     public static void main(String[] args) throws CancellationException {
-        ClientUtils.run("TotalTypeCount",
+        ClientUtils.run(TOTAL_TYPE_COUNT_JOB_TRACKER_NAME, QUERY_NUM,
             (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
                 ClientUtils.loadTypes(hazelcastInstance);
                 String neighborhood = ArgumentParser.getStringArg(NEIGHBOURHOOD_ARG);
@@ -51,23 +54,23 @@ public class Query4 {
                         .reducer(new TypeStreetUniqueReducerFactory())
                         .submit();
 
-                IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap("typeStreetMap");
+                IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap(TYPE_STREET_MAP_NAME);
                 typeStreetMap.putAll(futureTypeStreetMap.get());
 
                 long totalTypes = futureTotalTypeCount.get();
 
                 try (KeyValueSource<TypeStreet, Integer> keyValueSource = KeyValueSource.fromMap(typeStreetMap)) {
-                    ICompletableFuture<List<TypePercentageByStreetDTO>> futureTypePercentageByStreet = jobTracker.newJob(keyValueSource).
-                            mapper(new StreetMapper())
+                    ICompletableFuture<List<TypePercentageByStreetDTO>> futureTypePercentageByStreet = jobTracker.newJob(keyValueSource)
+                            .mapper(new StreetMapper())
                             .combiner(new TypePercentageByStreetCombinerFactory())
                             .reducer(new TypePercentageByStreetReducerFactory(totalTypes))
                             .submit(new TypePercentageByStreetCollator());
                     List<TypePercentageByStreetDTO> result = futureTypePercentageByStreet.get();
 
                     final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
-                    final Path outputPath = Paths.get(output, "query4.txt");
+                    final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, QUERY_NUM));
                     logger.info("Writing results to {} {}", result.size(), neighborhood);
-                    Stream<String> linesStream = result.stream().map(t -> String.format("%s;%.2g%%", t.street(), t.percentage()));
+                    Stream<String> linesStream = result.stream().map(t -> String.format("%s;%.2f%%", t.street(), t.percentage()));
                     CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY4_HEADERS), linesStream));
                 }
             }

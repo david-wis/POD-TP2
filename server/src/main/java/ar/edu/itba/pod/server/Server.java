@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static ar.edu.itba.pod.Globals.PASSWORD;
+import static ar.edu.itba.pod.Globals.USERNAME;
+
 public class Server {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
@@ -20,7 +23,7 @@ public class Server {
         Config config = new Config();
 
         // Group Config
-        GroupConfig groupConfig = new GroupConfig().setName("g4user").setPassword("g4pass");
+        GroupConfig groupConfig = new GroupConfig().setName(USERNAME).setPassword(PASSWORD);
         config.setGroupConfig(groupConfig);
 
         // Network Config

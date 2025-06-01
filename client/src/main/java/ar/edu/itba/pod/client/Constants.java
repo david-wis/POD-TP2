@@ -20,9 +20,8 @@ public class Constants {
     public static final String NYC_CITY = "NYC";
     public static final String CHI_CITY = "CHI";
 
-    // Default values
-    public static final String USERNAME = "g4user";
-    public static final String PASSWORD = "g4pass";
+    // Batch size
+    public static final int COMPLAINT_BATCH_SIZE = 100_000;
 
     // CSV Headers
     public static final String QUERY1_HEADERS = "type;agency;requests";

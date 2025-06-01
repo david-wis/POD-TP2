@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @SuppressWarnings("deprecation")
-public class TotalComplaintsByTypeAgencyCollator implements Collator<Map.Entry<TypeAgency, Integer>, List<TotalComplaintsByTypeAgencyDTO>> {
+public class TotalComplaintsByTypeAgencyCollator implements Collator<Map.Entry<TypeAgency, Long>, List<TotalComplaintsByTypeAgencyDTO>> {
     @Override
-    public List<TotalComplaintsByTypeAgencyDTO> collate(Iterable<Map.Entry<TypeAgency, Integer>> iterable) {
+    public List<TotalComplaintsByTypeAgencyDTO> collate(Iterable<Map.Entry<TypeAgency, Long>> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false)
                 .map(entry -> new TotalComplaintsByTypeAgencyDTO(
                         entry.getKey().getType(),
