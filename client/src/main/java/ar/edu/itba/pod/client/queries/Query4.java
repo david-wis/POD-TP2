@@ -1,6 +1,8 @@
 package ar.edu.itba.pod.client.queries;
 
+import ar.edu.itba.pod.client.ArgumentParser;
 import ar.edu.itba.pod.client.ClientUtils;
+import ar.edu.itba.pod.client.CsvManager;
 import ar.edu.itba.pod.collators.TotalTypeCountCollator;
 import ar.edu.itba.pod.collators.TypePercentageByStreetCollator;
 import ar.edu.itba.pod.combiners.TotalTypeCountCombinerFactory;
@@ -20,35 +22,40 @@ import com.hazelcast.mapreduce.KeyValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
+
+import static ar.edu.itba.pod.client.Constants.*;
 
 public class Query4 {
-    private static final Logger logger = LoggerFactory.getLogger(Query1.class);
+    private static final Logger logger = LoggerFactory.getLogger(Query4.class);
 
     @SuppressWarnings("deprecation")
-    public static void main(String[] args) throws IOException, CancellationException, InterruptedException, ExecutionException {
+    public static void main(String[] args) throws CancellationException {
         ClientUtils.run("TotalTypeCount",
-                (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+            (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+                ClientUtils.loadTypes(hazelcastInstance);
+                String neighborhood = ArgumentParser.getStringArg(NEIGHBOURHOOD_ARG);
                 ICompletableFuture<Long> futureTotalTypeCount = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TotalTypeCountMapper())
                         .combiner(new TotalTypeCountCombinerFactory())
                         .reducer(new TotalTypeCountReducerFactory())
                         .submit(new TotalTypeCountCollator());
                 ICompletableFuture<Map<TypeStreet, Integer>> futureTypeStreetMap = jobTracker.newJob(inputKeyValueSource)
-                        .mapper(new TypeStreetMapper())
+                        .mapper(new TypeStreetMapper(neighborhood))
                         .combiner(new TypeStreetUniqueCombinerFactory())
                         .reducer(new TypeStreetUniqueReducerFactory())
                         .submit();
-                long totalTypes;
-                IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap("typeStreetMap");
 
-                totalTypes = futureTotalTypeCount.get();
-                logger.info("Total types count: {}", totalTypes);
+                IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap("typeStreetMap");
                 typeStreetMap.putAll(futureTypeStreetMap.get());
+
+                long totalTypes = futureTotalTypeCount.get();
+
                 try (KeyValueSource<TypeStreet, Integer> keyValueSource = KeyValueSource.fromMap(typeStreetMap)) {
                     ICompletableFuture<List<TypePercentageByStreetDTO>> futureTypePercentageByStreet = jobTracker.newJob(keyValueSource).
                             mapper(new StreetMapper())
@@ -56,11 +63,12 @@ public class Query4 {
                             .reducer(new TypePercentageByStreetReducerFactory(totalTypes))
                             .submit(new TypePercentageByStreetCollator());
                     List<TypePercentageByStreetDTO> result = futureTypePercentageByStreet.get();
-                    result.forEach(typePercentageByStreetDTO ->
-                        logger.info("Street: {}, percentage: {}",
-                                typePercentageByStreetDTO.street(),
-                                typePercentageByStreetDTO.percentage())
-                    );
+
+                    final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
+                    final Path outputPath = Paths.get(output, "query4.txt");
+                    logger.info("Writing results to {} {}", result.size(), neighborhood);
+                    Stream<String> linesStream = result.stream().map(t -> String.format("%s;%.2g%%", t.street(), t.percentage()));
+                    CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY4_HEADERS), linesStream));
                 }
             }
         );

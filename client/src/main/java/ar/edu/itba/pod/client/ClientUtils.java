@@ -7,6 +7,7 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -111,6 +112,14 @@ public class ClientUtils {
         } finally {
             HazelcastClient.shutdownAll();
         }
+    }
+
+    public static void loadTypes(HazelcastInstance hazelcastInstance) throws IOException {
+        final String inPath = ArgumentParser.getStringArg(IN_PATH_ARG);
+        final String city = ArgumentParser.getStringArg(CITY_ARG);
+        final Path inputPath = Paths.get(inPath, String.format(SERVICE_TYPES_FILE_TEMPLATE, city));
+        IList<String> typeList = hazelcastInstance.getList("types");
+        CsvManager.readFile(inputPath,s -> s[0], typeList::add);
     }
 
 }
