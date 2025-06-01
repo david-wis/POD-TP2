@@ -2,6 +2,7 @@ package ar.edu.itba.pod.client.queries;
 
 import ar.edu.itba.pod.client.ClientUtils;
 import ar.edu.itba.pod.collators.AgencyDateMovingAverageCollator;
+import ar.edu.itba.pod.combiners.AgencyDateMovingAverageCombinerFactory;
 import ar.edu.itba.pod.mappers.AgencyDateMovingAverageMapper;
 import ar.edu.itba.pod.models.dto.AgencyDateMovingAverageDTO;
 import ar.edu.itba.pod.reducers.AgencyDateMovingAverageReducerFactory;
@@ -23,6 +24,7 @@ public class Query3 {
         ClientUtils.run("AgencyDateMovingAverage", (jobTracker, keyValueSource, hazelcastInstance) -> {
             ICompletableFuture<List<AgencyDateMovingAverageDTO> > futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new AgencyDateMovingAverageMapper(WINDOW_SIZE))
+                    .combiner(new AgencyDateMovingAverageCombinerFactory())
                     .reducer(new AgencyDateMovingAverageReducerFactory(WINDOW_SIZE))
                     .submit(new AgencyDateMovingAverageCollator());
 

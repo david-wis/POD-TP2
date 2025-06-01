@@ -2,6 +2,8 @@ package ar.edu.itba.pod.client.queries;
 
 import ar.edu.itba.pod.client.ClientUtils;
 import ar.edu.itba.pod.collators.NeighborhoodQuadTypeMaxCountCollator;
+import ar.edu.itba.pod.combiners.MaxTypeCombinerFactory;
+import ar.edu.itba.pod.combiners.NeighborhoodQuadTypeCountCombinerFactory;
 import ar.edu.itba.pod.mappers.MostPopularTypeMapper;
 import ar.edu.itba.pod.mappers.NeighborhoodQuadTypeMapper;
 import ar.edu.itba.pod.models.NeighborhoodQuadType;
@@ -32,6 +34,7 @@ public class Query2 {
         ClientUtils.run("MostPopularType", (jobTracker, inputKeyValueSource, hazelcastInstance) -> {
             ICompletableFuture<Map<NeighborhoodQuadType, Long>> future1 = jobTracker.newJob(inputKeyValueSource)
                     .mapper(new NeighborhoodQuadTypeMapper(q))
+                    .combiner(new NeighborhoodQuadTypeCountCombinerFactory())
                     .reducer(new NeighborhoodQuadTypeCountReducerFactory())
                     .submit();
 
@@ -44,6 +47,7 @@ public class Query2 {
             try (KeyValueSource<NeighborhoodQuadType, Long> kvSource = KeyValueSource.fromMap(intermediateMap)) {
                 ICompletableFuture<List<NeighborhoodQuadTypeMaxCountDTO>> future2 = jobTracker.newJob(kvSource)
                         .mapper(new MostPopularTypeMapper())
+                        .combiner(new MaxTypeCombinerFactory())
                         .reducer(new MaxTypeReducerFactory())
                         .submit(new NeighborhoodQuadTypeMaxCountCollator());
 

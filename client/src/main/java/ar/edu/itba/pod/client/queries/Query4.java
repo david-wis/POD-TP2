@@ -3,6 +3,9 @@ package ar.edu.itba.pod.client.queries;
 import ar.edu.itba.pod.client.ClientUtils;
 import ar.edu.itba.pod.collators.TotalTypeCountCollator;
 import ar.edu.itba.pod.collators.TypePercentageByStreetCollator;
+import ar.edu.itba.pod.combiners.TotalTypeCountCombinerFactory;
+import ar.edu.itba.pod.combiners.TypePercentageByStreetCombinerFactory;
+import ar.edu.itba.pod.combiners.TypeStreetUniqueCombinerFactory;
 import ar.edu.itba.pod.mappers.StreetMapper;
 import ar.edu.itba.pod.mappers.TotalTypeCountMapper;
 import ar.edu.itba.pod.mappers.TypeStreetMapper;
@@ -32,10 +35,12 @@ public class Query4 {
                 (jobTracker, inputKeyValueSource, hazelcastInstance) -> {
                 ICompletableFuture<Long> futureTotalTypeCount = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TotalTypeCountMapper())
+                        .combiner(new TotalTypeCountCombinerFactory())
                         .reducer(new TotalTypeCountReducerFactory())
                         .submit(new TotalTypeCountCollator());
                 ICompletableFuture<Map<TypeStreet, Integer>> futureTypeStreetMap = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TypeStreetMapper())
+                        .combiner(new TypeStreetUniqueCombinerFactory())
                         .reducer(new TypeStreetUniqueReducerFactory())
                         .submit();
                 long totalTypes;
@@ -47,6 +52,7 @@ public class Query4 {
                 try (KeyValueSource<TypeStreet, Integer> keyValueSource = KeyValueSource.fromMap(typeStreetMap)) {
                     ICompletableFuture<List<TypePercentageByStreetDTO>> futureTypePercentageByStreet = jobTracker.newJob(keyValueSource).
                             mapper(new StreetMapper())
+                            .combiner(new TypePercentageByStreetCombinerFactory())
                             .reducer(new TypePercentageByStreetReducerFactory(totalTypes))
                             .submit(new TypePercentageByStreetCollator());
                     List<TypePercentageByStreetDTO> result = futureTypePercentageByStreet.get();

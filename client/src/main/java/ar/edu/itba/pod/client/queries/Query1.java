@@ -4,6 +4,7 @@ import ar.edu.itba.pod.client.ArgumentParser;
 import ar.edu.itba.pod.client.ClientUtils;
 import ar.edu.itba.pod.client.CsvManager;
 import ar.edu.itba.pod.collators.TotalComplaintsByTypeAgencyCollator;
+import ar.edu.itba.pod.combiners.TotalComplaintsByTypeAgencyCombinerFactory;
 import ar.edu.itba.pod.mappers.TotalComplaintsByTypeAgencyMapper;
 import ar.edu.itba.pod.models.dto.TotalComplaintsByTypeAgencyDTO;
 import ar.edu.itba.pod.reducers.TotalComplaintsByTypeAgencyReducerFactory;
@@ -30,6 +31,7 @@ public class Query1 {
         ClientUtils.run("TotalComplaintsByTypeAgency", (jobTracker, keyValueSource, hazelcastInstance) -> {
             ICompletableFuture<List<TotalComplaintsByTypeAgencyDTO>> futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new TotalComplaintsByTypeAgencyMapper())
+                    .combiner(new TotalComplaintsByTypeAgencyCombinerFactory())
                     .reducer(new TotalComplaintsByTypeAgencyReducerFactory())
                     .submit(new TotalComplaintsByTypeAgencyCollator());
 
