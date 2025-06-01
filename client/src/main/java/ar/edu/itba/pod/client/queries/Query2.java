@@ -35,9 +35,9 @@ public class Query2 {
     private static final int QUERY_NUM = 2;
 
     public static void main(String[] args) {
-        final float q = ArgumentParser.getFloatArg(Q_ARG, Q_MIN, Q_MAX);
 
         ClientUtils.run(MOST_POPULAR_TYPE_JOB_TRACKER_NAME , QUERY_NUM, (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
+            final float q = ArgumentParser.getFloatArg(Q_ARG, Q_MIN, Q_MAX);
             ClientUtils.loadTypes(hazelcastInstance);
             customLogger.info("Inicio del trabajo 1 map/reduce");
             ICompletableFuture<Map<NeighborhoodQuadType, Long>> future1 = jobTracker.newJob(inputKeyValueSource)

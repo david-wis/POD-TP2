@@ -111,6 +111,8 @@ public class ClientUtils {
             logger.error("Invalid argument: {}", e.getMessage());
         } catch (IOException e) {
             logger.error("Error reading input file: {}", e.getMessage());
+        } catch (IllegalStateException e) {
+            logger.error("Error with Hazelcast client configuration: {}", e.getMessage());
         } catch (Exception e) {
             logger.error("An unexpected error occurred: {}", e.getMessage(), e);
         } finally {

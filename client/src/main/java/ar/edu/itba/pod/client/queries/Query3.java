@@ -26,10 +26,8 @@ public class Query3 {
     private static final int QUERY_NUM = 3;
 
     public static void main(String[] args) {
-
-        final int windowSize = ArgumentParser.getIntegerArg(W_ARG, W_MIN, W_MAX);
-
         ClientUtils.run(AGENCY_DATE_MOVING_AVERAGE_JOB_TRACKER_NAME , QUERY_NUM, (jobTracker, keyValueSource, hazelcastInstance, customLogger) -> {
+            final int windowSize = ArgumentParser.getIntegerArg(W_ARG, W_MIN, W_MAX);
             customLogger.info("Inicio del trabajo map/reduce");
             ICompletableFuture<List<AgencyDateMovingAverageDTO> > futureResponse = jobTracker.newJob(keyValueSource)
                     .mapper(new AgencyDateMovingAverageMapper(windowSize))
