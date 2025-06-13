@@ -8,12 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 
-import static ar.edu.itba.pod.Globals.PASSWORD;
-import static ar.edu.itba.pod.Globals.USERNAME;
+import static ar.edu.itba.pod.Globals.*;
+
 
 public class Server {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
+
 
     public static void main(String[] args) {
         logger.info(" Server Starting ...");
@@ -26,21 +27,22 @@ public class Server {
         config.setGroupConfig(groupConfig);
 
         InterfacesConfig interfacesConfig = new InterfacesConfig()
-                .setInterfaces(getListArg("interfaces", Collections.singletonList("127.0.0.*"))).setEnabled(true);
+                .setInterfaces(getListArg(PROPERTY_INTERFACES, Collections.singletonList(DEFAULT_INTERFACE)))
+                .setEnabled(true);
 
         NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig);
 
-        String publicAddress = System.getProperty("publicAddress");
+        String publicAddress = System.getProperty(PROPERTY_PUBLIC_ADDRESS);
         if (publicAddress != null)
             networkConfig.setPublicAddress(publicAddress);
 
-        String mode = System.getProperty("mode", "multicast").toLowerCase();
+        String mode = System.getProperty(PROPERTY_MODE, DEFAULT_MODE).toLowerCase();
         JoinConfig joinConfig = new JoinConfig();
 
         if (mode.equals("tcp")) {
             logger.info("Using TCP/IP cluster discovery");
 
-            List<String> members = getListArg("members", Collections.emptyList());
+            List<String> members = getListArg(PROPERTY_MEMBERS, Collections.emptyList());
             logger.info("Members: {}", members);
 
             TcpIpConfig tcpIpConfig = new TcpIpConfig()
@@ -73,7 +75,6 @@ public class Server {
         // Start cluster
         Hazelcast.newHazelcastInstance(config);
     }
-
 
     public static List<String> getListArg(String name, List<String> defaultValue) {
         String arg = System.getProperty(name);

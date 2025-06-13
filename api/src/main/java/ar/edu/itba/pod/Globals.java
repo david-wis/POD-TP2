@@ -17,4 +17,14 @@ public class Globals {
     public static final String NEIGHBOURHOOD_TYPE_COUNT_MAP_NAME = "g4-neighborhoodQuadTypeCountMap";
     public static final String TYPE_STREET_MAP_NAME = "g4-TypeStreetMap";
 
+    // System properties (keys)
+    public static final String PROPERTY_INTERFACES = "interfaces";
+    public static final String PROPERTY_PUBLIC_ADDRESS = "publicAddress";
+    public static final String PROPERTY_MODE = "mode";
+    public static final String PROPERTY_MEMBERS = "members";
+
+    // Default values
+    public static final String DEFAULT_INTERFACE = "127.0.0.*";
+    public static final String DEFAULT_MODE = "multicast";
+
 }
