@@ -26,7 +26,7 @@ public class Server {
         config.setGroupConfig(groupConfig);
 
         InterfacesConfig interfacesConfig = new InterfacesConfig()
-                .setInterfaces(getListArg("interfaces")).setEnabled(true);
+                .setInterfaces(getListArg("interfaces", Collections.singletonList("127.0.0.*"))).setEnabled(true);
 
         NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig);
 
@@ -40,7 +40,7 @@ public class Server {
         if (mode.equals("tcp")) {
             logger.info("Using TCP/IP cluster discovery");
 
-            List<String> members = getListArg("members");
+            List<String> members = getListArg("members", Collections.emptyList());
             logger.info("Members: {}", members);
 
             TcpIpConfig tcpIpConfig = new TcpIpConfig()
@@ -75,13 +75,12 @@ public class Server {
     }
 
 
-    public static List<String> getListArg(String name) {
+    public static List<String> getListArg(String name, List<String> defaultValue) {
         String arg = System.getProperty(name);
 
         if (arg == null || arg.isEmpty()) {
-            logger.warn("No interfaces provided, using default: 127.0.0.*");
-//            return Collections.singletonList("127.0.0.*");
-            return Collections.singletonList("192.168.1.*");
+            logger.warn("No value provided, using default: 127.0.0.*");
+            return defaultValue;
         }
         logger.info("Using interfaces provided: {}", arg);
         return List.of(arg.split(";"));
