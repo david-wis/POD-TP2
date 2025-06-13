@@ -42,17 +42,22 @@ public class Query4 {
         ClientUtils.run(TOTAL_TYPE_COUNT_JOB_TRACKER_NAME, QUERY_NUM,
             (jobTracker, inputKeyValueSource, hazelcastInstance, customLogger) -> {
                 ClientUtils.loadTypes(hazelcastInstance);
-                String neighborhood = ArgumentParser.getStringArg(NEIGHBOURHOOD_ARG);
+                String neighborhood = ArgumentParser.getStringArg(NEIGHBOURHOOD_ARG).replace('_', ' ');
+
+                customLogger.info("Inicio del trabajo 1 map/reduce");
                 ICompletableFuture<Long> futureTotalTypeCount = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TotalTypeCountMapper())
                         .combiner(new TotalTypeCountCombinerFactory())
                         .reducer(new TotalTypeCountReducerFactory())
                         .submit(new TotalTypeCountCollator());
+                customLogger.info("Fin del trabajo 1 map/reduce");
+                customLogger.info("Inicio del trabajo 2 map/reduce");
                 ICompletableFuture<Map<TypeStreet, Integer>> futureTypeStreetMap = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TypeStreetMapper(neighborhood))
                         .combiner(new TypeStreetUniqueCombinerFactory())
                         .reducer(new TypeStreetUniqueReducerFactory())
                         .submit();
+                customLogger.info("Fin del trabajo 2 map/reduce");
 
                 IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap(TYPE_STREET_MAP_NAME);
                 typeStreetMap.putAll(futureTypeStreetMap.get());
@@ -60,6 +65,7 @@ public class Query4 {
                 long totalTypes = futureTotalTypeCount.get();
 
                 try (KeyValueSource<TypeStreet, Integer> keyValueSource = KeyValueSource.fromMap(typeStreetMap)) {
+                    customLogger.info("Inicio del trabajo 3 map/reduce");
                     ICompletableFuture<List<TypePercentageByStreetDTO>> futureTypePercentageByStreet = jobTracker.newJob(keyValueSource)
                             .mapper(new StreetMapper())
                             .combiner(new TypePercentageByStreetCombinerFactory())
@@ -72,7 +78,9 @@ public class Query4 {
                     logger.info("Writing results to {} {}", result.size(), neighborhood);
                     Stream<String> linesStream = result.stream().map(t -> String.format("%s;%.2f%%", t.street(), t.percentage()));
                     CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY4_HEADERS), linesStream));
+                    customLogger.info("Fin del trabajo 3 map/reduce");
                 }
+                typeStreetMap.destroy();
             }
         );
     }
