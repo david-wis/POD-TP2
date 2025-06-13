@@ -66,6 +66,7 @@ public class Query2 {
                 Stream<String> linesStream = result.stream().map(dto -> String.format("%s;%d;%d;%s", dto.neighborhood(), dto.quadLat(), dto.quadLon(), dto.type()));
                 CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY2_HEADERS), linesStream));
             }
+            intermediateMap.destroy();
         });
     }
 }
