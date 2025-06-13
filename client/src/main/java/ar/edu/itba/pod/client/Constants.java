@@ -38,5 +38,29 @@ public class Constants {
     // Logger
     public static final String CUSTOM_LOGGER_NAME = "CustomLogger";
 
+    // ------------------ NYC ------------------
+    public static final int NYC_ID = 0;
+    public static final int NYC_CREATED_DATE = 1;
+    public static final int NYC_AGENCY_NAME = 2;
+    public static final int NYC_COMPLAINT_TYPE = 3;
+    public static final int NYC_INCIDENT_ADDRESS = 4;
+    public static final int NYC_STATUS = 5;
+    public static final int NYC_BOROUGH = 6;
+    public static final int NYC_LATITUDE = 7;
+    public static final int NYC_LONGITUDE = 8;
+
+    // ------------------ CHICAGO ------------------
+    public static final int CHI_SR_NUMBER = 0;
+    public static final int CHI_SR_SHORT_CODE = 1;
+    public static final int CHI_OWNER_DEPARTMENT = 2;
+    public static final int CHI_STATUS = 3;
+    public static final int CHI_CREATED_DATE = 4;
+    public static final int CHI_STREET_NUMBER = 5;
+    public static final int CHI_STREET_DIRECTION = 6;
+    public static final int CHI_STREET_NAME = 7;
+    public static final int CHI_STREET_TYPE = 8;
+    public static final int CHI_COMMUNITY_AREA = 9;
+    public static final int CHI_LATITUDE = 10;
+    public static final int CHI_LONGITUDE = 11;
 
 }
