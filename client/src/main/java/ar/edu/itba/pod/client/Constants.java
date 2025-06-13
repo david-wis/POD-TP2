@@ -25,8 +25,8 @@ public class Constants {
 
     // CSV Headers
     public static final String QUERY1_HEADERS = "type;agency;requests";
-    public static final String QUERY2_HEADERS = "neighbourhood;quadLat;quadLong;topType";
-    public static final String QUERY3_HEADERS = "agency;year;month;movingAverage";
+    public static final String QUERY2_HEADERS = "neighbourhood;quadLat;quadLon;topType";
+    public static final String QUERY3_HEADERS = "agency;year;month;movingAvg";
     public static final String QUERY4_HEADERS = "street;typePercentage";
 
     // Files
