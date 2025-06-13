@@ -20,7 +20,7 @@ public class TotalTypeCountReducerFactory implements ReducerFactory<String, Bool
 
         @Override
         public void reduce(Boolean value) {
-            exists |= value;
+            exists = true;
         }
 
         @Override

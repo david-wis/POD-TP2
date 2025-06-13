@@ -22,7 +22,7 @@ public class TypeStreetUniqueCombinerFactory implements CombinerFactory<TypeStre
 
         @Override
         public void combine(Integer value) {
-            max = Math.max(max, value);
+            max = 1;
         }
 
         @Override

@@ -50,19 +50,21 @@ public class Query4 {
                         .combiner(new TotalTypeCountCombinerFactory())
                         .reducer(new TotalTypeCountReducerFactory())
                         .submit(new TotalTypeCountCollator());
+                long totalTypes = futureTotalTypeCount.get();
                 customLogger.info("Fin del trabajo 1 map/reduce");
+
                 customLogger.info("Inicio del trabajo 2 map/reduce");
                 ICompletableFuture<Map<TypeStreet, Integer>> futureTypeStreetMap = jobTracker.newJob(inputKeyValueSource)
                         .mapper(new TypeStreetMapper(neighborhood))
                         .combiner(new TypeStreetUniqueCombinerFactory())
                         .reducer(new TypeStreetUniqueReducerFactory())
                         .submit();
+                var distinctNeighbourhoodTypes = futureTypeStreetMap.get();
                 customLogger.info("Fin del trabajo 2 map/reduce");
 
                 IMap<TypeStreet, Integer> typeStreetMap = hazelcastInstance.getMap(TYPE_STREET_MAP_NAME);
-                typeStreetMap.putAll(futureTypeStreetMap.get());
+                typeStreetMap.putAll(distinctNeighbourhoodTypes);
 
-                long totalTypes = futureTotalTypeCount.get();
 
                 try (KeyValueSource<TypeStreet, Integer> keyValueSource = KeyValueSource.fromMap(typeStreetMap)) {
                     customLogger.info("Inicio del trabajo 3 map/reduce");
