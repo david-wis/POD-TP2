@@ -21,7 +21,7 @@ public class AgencyDateMovingAverageMapper implements Mapper<String, Complaint, 
         int month = complaint.getMonth();
         int end = Math.min(month + windowSize - 1, 12);
         for (int i = month; i <= end; i++) {
-            AgencyDate newAgencyDate = new AgencyDate(complaint, month);
+            AgencyDate newAgencyDate = new AgencyDate(complaint, i);
             context.emit(newAgencyDate, 1L);
         }
     }

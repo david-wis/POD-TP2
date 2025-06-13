@@ -23,8 +23,8 @@ public class NeighborhoodQuadTypeMapper implements Mapper<String, Complaint, Nei
         final String type = hazelcastInstance.<String, String>getMap(TYPES_MAP_NAME).get(complaint.getType());
         if (type == null) return; // Ignore complaints with unknown types
 
-        int quadLat = (int) Math.floor(complaint.getLatitude() / q);
-        int quadLon = (int) Math.floor(complaint.getLongitude() / q);
+        int quadLat = (int) (complaint.getLatitude() / q);
+        int quadLon = (int) (complaint.getLongitude() / q);
         NeighborhoodQuadType nq = new NeighborhoodQuadType(complaint.getNeighborhood(), quadLat, quadLon, type);
         context.emit(nq, 1L);
     }
