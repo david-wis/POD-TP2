@@ -5,7 +5,6 @@ import com.hazelcast.core.Hazelcast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,17 +25,43 @@ public class Server {
         GroupConfig groupConfig = new GroupConfig().setName(USERNAME).setPassword(PASSWORD);
         config.setGroupConfig(groupConfig);
 
-        // Network Config
-        MulticastConfig multicastConfig = new MulticastConfig();
-
-        JoinConfig joinConfig = new JoinConfig().setMulticastConfig(multicastConfig);
-
         InterfacesConfig interfacesConfig = new InterfacesConfig()
-                .setInterfaces(getInterfacesArg()).setEnabled(true);
+                .setInterfaces(getListArg("interfaces")).setEnabled(true);
 
-        NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig).setJoin(joinConfig);
+        NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig);
 
+        String publicAddress = System.getProperty("publicAddress");
+        if (publicAddress != null)
+            networkConfig.setPublicAddress(publicAddress);
+
+        String mode = System.getProperty("mode", "multicast").toLowerCase();
+        JoinConfig joinConfig = new JoinConfig();
+
+        if (mode.equals("tcp")) {
+            logger.info("Using TCP/IP cluster discovery");
+
+            List<String> members = getListArg("members");
+            logger.info("Members: {}", members);
+
+            TcpIpConfig tcpIpConfig = new TcpIpConfig()
+                    .setEnabled(true)
+                    .setMembers(members);
+
+            joinConfig.setTcpIpConfig(tcpIpConfig);
+            joinConfig.getMulticastConfig().setEnabled(false);
+
+        } else {
+            logger.info("Using Multicast cluster discovery");
+
+            MulticastConfig multicastConfig = new MulticastConfig().setEnabled(true);
+
+            joinConfig.setMulticastConfig(multicastConfig);
+            joinConfig.getTcpIpConfig().setEnabled(false);
+        }
+
+        networkConfig.setJoin(joinConfig);
         config.setNetworkConfig(networkConfig);
+
 
         // Opcional: Logger detallado
 //        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -50,12 +75,13 @@ public class Server {
     }
 
 
-    public static Collection<String> getInterfacesArg() {
-        String arg = System.getProperty("interfaces");
+    public static List<String> getListArg(String name) {
+        String arg = System.getProperty(name);
 
         if (arg == null || arg.isEmpty()) {
             logger.warn("No interfaces provided, using default: 127.0.0.*");
-            return Collections.singletonList("127.0.0.*");
+//            return Collections.singletonList("127.0.0.*");
+            return Collections.singletonList("192.168.1.*");
         }
         logger.info("Using interfaces provided: {}", arg);
         return List.of(arg.split(";"));
