@@ -1,0 +1,11 @@
+neighbourhood;quadLat;quadLong;topType
+BROOKLYN;406;-739;Lost Property
+BROOKLYN;407;-739;Consumer Complaint
+BROOKLYN;407;-738;Noise - Helicopter
+MANHATTAN;406;-739;Lost Property
+MANHATTAN;406;-738;Noise - Helicopter
+MANHATTAN;407;-739;Lost Property
+QUEENS;406;-738;Consumer Complaint
+QUEENS;407;-739;Noise - Helicopter
+QUEENS;407;-738;Noise - Helicopter
+UNKNOWN;389;-749;Consumer Complaint

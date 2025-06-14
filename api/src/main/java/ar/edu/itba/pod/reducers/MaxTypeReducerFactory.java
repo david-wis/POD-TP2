@@ -22,7 +22,7 @@ public class MaxTypeReducerFactory implements ReducerFactory<NeighborhoodQuad, T
 
         @Override
         public void reduce(TypeCount value) {
-            if (max == null || value.getCount() > max.getCount()) {
+            if (max == null || value.compareTo(max) > 0) {
                 max = value;
             }
         }

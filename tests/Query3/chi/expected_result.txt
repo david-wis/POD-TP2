@@ -1,0 +1,42 @@
+agency;year;month;movingAverage
+Animal Care and Control;2024;1;1.00
+Animal Care and Control;2024;2;1.00
+Animal Care and Control;2024;3;1.33
+Animal Care and Control;2024;4;1.00
+Animal Care and Control;2024;5;0.66
+Animal Care and Control;2025;1;1.00
+Animal Care and Control;2025;2;1.50
+Animal Care and Control;2025;3;1.33
+Animal Care and Control;2025;4;1.66
+Animal Care and Control;2025;5;1.00
+Animal Care and Control;2025;6;0.66
+Streets and Sanitation;2024;2;0.50
+Streets and Sanitation;2024;3;0.66
+Streets and Sanitation;2024;4;1.00
+Streets and Sanitation;2024;5;0.66
+Streets and Sanitation;2024;6;0.66
+Streets and Sanitation;2024;7;0.33
+Streets and Sanitation;2024;8;0.33
+Streets and Sanitation;2025;1;2.00
+Streets and Sanitation;2025;2;1.00
+Streets and Sanitation;2025;3;1.00
+Streets and Sanitation;2025;4;0.66
+Streets and Sanitation;2025;5;0.66
+Streets and Sanitation;2025;6;1.00
+Streets and Sanitation;2025;7;0.66
+Streets and Sanitation;2025;8;0.66
+Transportation;2024;1;2.00
+Transportation;2024;2;1.50
+Transportation;2024;3;1.00
+Transportation;2024;4;0.33
+Transportation;2024;6;0.33
+Transportation;2024;7;0.33
+Transportation;2024;8;0.33
+Transportation;2025;1;2.00
+Transportation;2025;2;1.00
+Transportation;2025;3;1.00
+Transportation;2025;4;1.33
+Transportation;2025;5;1.66
+Transportation;2025;6;1.66
+Transportation;2025;7;0.66
+Transportation;2025;8;0.33

@@ -1,0 +1,6 @@
+type;agency;requests
+311 INFORMATION ONLY CALL;311 City Services;5
+Garbage Cart Maintenance;Streets and Sanitation;5
+Graffiti Removal Request;Streets and Sanitation;4
+Aircraft Noise Complaint;Aviation;3
+Rodent Baiting/Rat Complaint;Streets and Sanitation;3

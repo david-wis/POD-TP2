@@ -1,0 +1,9 @@
+neighbourhood;quadLat;quadLong;topType
+ALBANY PARK;418;-877;Graffiti Removal Request
+ALBANY PARK;418;-876;Graffiti Removal Request
+ALBANY PARK;419;-877;Yard Waste Pick-Up Request
+ALBANY PARK;419;-876;Yard Waste Pick-Up Request
+ARCHER HEIGHTS;418;-877;Yard Waste Pick-Up Request
+ARCHER HEIGHTS;418;-876;Graffiti Removal Request
+ARCHER HEIGHTS;419;-876;Yard Waste Pick-Up Request
+AUBURN GRESHAM;419;-876;Graffiti Removal Request

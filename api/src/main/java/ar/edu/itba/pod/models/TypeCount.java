@@ -6,7 +6,7 @@ import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
 
-public class TypeCount implements DataSerializable {
+public class TypeCount implements DataSerializable, Comparable<TypeCount> {
     private String type;
     private long count;
 
@@ -43,6 +43,16 @@ public class TypeCount implements DataSerializable {
     }
 
     @Override
+    public int compareTo(TypeCount o) {
+        int countComparison = Long.compare(this.count, o.count);
+        if( countComparison != 0) {
+            return countComparison;
+        }
+        return this.type.compareTo(o.type);
+    }
+
+
+    @Override
     public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
         objectDataOutput.writeUTF(type);
         objectDataOutput.writeLong(count);
@@ -53,5 +63,6 @@ public class TypeCount implements DataSerializable {
         this.type = objectDataInput.readUTF();
         this.count = objectDataInput.readLong();
     }
+
 
 }
