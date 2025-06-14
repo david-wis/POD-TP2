@@ -48,7 +48,7 @@ public class TypeCount implements DataSerializable, Comparable<TypeCount> {
         if( countComparison != 0) {
             return countComparison;
         }
-        return this.type.compareTo(o.type);
+        return o.type.compareTo(type);
     }
 
 

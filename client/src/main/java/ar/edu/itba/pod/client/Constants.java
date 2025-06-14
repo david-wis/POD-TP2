@@ -30,7 +30,7 @@ public class Constants {
     public static final String QUERY4_HEADERS = "street;typePercentage";
 
     // Files
-    public static final String QUERY_FILE_TEMPLATE = "query%d.txt";
+    public static final String QUERY_FILE_TEMPLATE = "query%d.csv";
     public static final String TIME_FILE_TEMPLATE = "time%d.txt";
     public static final String SERVICE_REQUESTS_FILE_TEMPLATE = "serviceRequests%s.csv";
     public static final String SERVICE_TYPES_FILE_TEMPLATE = "serviceTypes%s.csv";
