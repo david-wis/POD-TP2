@@ -5,9 +5,9 @@ import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
 @SuppressWarnings("deprecation")
-public class StreetMapper implements Mapper<TypeStreet, Integer, String, Integer> {
+public class StreetMapper implements Mapper<TypeStreet, Integer, String, Long> {
     @Override
-    public void map(TypeStreet key, Integer value, Context<String, Integer> context) {
-        context.emit(key.getStreet(), value);
+    public void map(TypeStreet key, Integer value, Context<String, Long> context) {
+        context.emit(key.getStreet(), (long) value);
     }
 }
