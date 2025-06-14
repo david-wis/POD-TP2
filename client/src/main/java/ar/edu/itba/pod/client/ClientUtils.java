@@ -47,7 +47,7 @@ public class ClientUtils {
                     return String.format("%s [%s] %s%n", date, record.getLevel(), record.getMessage());
                 }
         };
-        customLogger.addHandler(new FileHandler(outputPath.toString(), true) {{
+        customLogger.addHandler(new FileHandler(outputPath.toString()) {{
             setFormatter(formatter);
         }});
         customLogger.addHandler(new ConsoleHandler() {{
