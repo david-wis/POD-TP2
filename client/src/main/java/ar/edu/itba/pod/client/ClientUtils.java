@@ -42,7 +42,7 @@ public class ClientUtils {
         Formatter formatter = new java.util.logging.SimpleFormatter() {
                 @Override
                 public String format(java.util.logging.LogRecord record) {
-                    String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSSS")
+                    String date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSSS")
                             .format(new Date(record.getMillis()));
                     return String.format("%s [%s] %s%n", date, record.getLevel(), record.getMessage());
                 }

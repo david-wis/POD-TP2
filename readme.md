@@ -28,8 +28,8 @@ Los datos son extraídos de los respectivos portales de gobierno en formato CSV.
 1. Ejecutar `mvn clean install` para compilar el proyecto y descargar las dependencias necesarias.
 2. Dentro del directorio `server` ejecutar `run_server.sh` o `run_server_multi.sh` para iniciar el servidor.
 3. Dentro del directorio `client` ejecutar `run_client.sh` para generar los scripts de cliente.
-   Estos podrán encontrarse en el directorio `client/target/tpe1-g4-client-2025.1Q`.
-4. Dentro del directorio `client/target/tpe2-g4-client-1.0-SNAPSHOT` ejecutar `query1.sh`, `query2.sh`, `query3.sh`, `query4.sh` o `query5.sh`.
+   Estos podrán encontrarse en el directorio `client/target/tpe2-g4-client-1.0-SNAPSHOT`.
+4. Dentro del directorio `client/target/tpe2-g4-client-1.0-SNAPSHOT` ejecutar `query1.sh`, `query2.sh`, `query3.sh` o `query4.sh`.
 
 ### Comandos permitidos por cada cliente
 - Query1
@@ -44,7 +44,7 @@ Los datos son extraídos de los respectivos portales de gobierno en formato CSV.
 Para más información sobre los comandos, consultar el siguiente [documento](/docs/TPE2%20Reclamos%20Urbanos.pdf)
 
 ### Parametros permitidos por el servidor
-`sh run_server.sh -Dinterface=<IP> [-Dmode=<tcp|multicast> -Dmembers=<IP1:PUERTO1;IP2:PUERTO2;...>]`
+`sh run_server.sh -Dinterfaces=<IP> [-Dmode=<tcp|multicast> -Dmembers=<IP1:PUERTO1;IP2:PUERTO2;...>]`
 
 ## Docker compose
 Para correr el proyecto en un entorno de múltiples nodos, se puede utilizar Docker Compose. 
@@ -53,6 +53,6 @@ Para correr el proyecto en un entorno de múltiples nodos, se puede utilizar Doc
 ./run_server_multi.sh
 ```
 Por defecto el está configurado para levantar 5 contenedores con hazelcast en las ips `172.28.0.2`, `172.28.0.3`, `172.28.0.4`, `172.28.0.5` y `172.28.0.6`.
-Para levantar menos o cambiar las ips, simplemente se debe modificar el docker-compose.yaml y volver a correr `mvn clean install` y `./run_server_multi.sh`.
+Para levantar menos o cambiar las ips, simplemente se debe modificar el docker-compose.yaml y volver a correr `mvn clean install`, `./run_server_multi.sh` y `./run_client.sh`.
 
 
