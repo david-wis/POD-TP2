@@ -4,14 +4,14 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 
 @SuppressWarnings("deprecation")
-public class TypePercentageByStreetCombinerFactory implements CombinerFactory<String, Integer, Long> {
+public class TypePercentageByStreetCombinerFactory implements CombinerFactory<String, Long, Long> {
 
     @Override
-    public Combiner<Integer, Long> newCombiner(String key) {
+    public Combiner<Long, Long> newCombiner(String key) {
         return new TypePercentageByStreetCombiner();
     }
 
-    private static class TypePercentageByStreetCombiner extends Combiner<Integer, Long> {
+    private static class TypePercentageByStreetCombiner extends Combiner<Long, Long> {
         private long count = 0;
 
         @Override
@@ -20,7 +20,7 @@ public class TypePercentageByStreetCombinerFactory implements CombinerFactory<St
         }
 
         @Override
-        public void combine(Integer value) {
+        public void combine(Long value) {
             count += value;
         }
 
