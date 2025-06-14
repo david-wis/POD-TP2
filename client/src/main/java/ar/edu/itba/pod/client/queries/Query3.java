@@ -34,9 +34,7 @@ public class Query3 {
                     .combiner(new AgencyDateMovingAverageCombinerFactory())
                     .reducer(new AgencyDateMovingAverageReducerFactory(windowSize))
                     .submit(new AgencyDateMovingAverageCollator());
-            List<AgencyDateMovingAverageDTO> result = null;
-            result = futureResponse.get();
-            customLogger.info("Inicio del trabajo map/reduce");
+            List<AgencyDateMovingAverageDTO> result = futureResponse.get();
 
             final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
             final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, QUERY_NUM));
@@ -44,6 +42,7 @@ public class Query3 {
                     .map(dto -> String.format("%s;%d;%d;%.2f",
                             dto.agency(), dto.year(), dto.month(), dto.movingAverage()));
             CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY3_HEADERS), linesStream));
+            customLogger.info("Fin del trabajo map/reduce");
         });
 
     }

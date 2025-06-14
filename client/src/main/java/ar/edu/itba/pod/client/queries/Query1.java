@@ -35,12 +35,12 @@ public class Query1 {
                     .reducer(new TotalComplaintsByTypeAgencyReducerFactory())
                     .submit(new TotalComplaintsByTypeAgencyCollator());
             List<TotalComplaintsByTypeAgencyDTO> result = futureResponse.get();
-            customLogger.info("Fin del trabajo map/reduce");
 
             final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
             final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, QUERY_NUM));
             Stream<String> linesStream = result.stream().map(t -> String.format("%s;%s;%d", t.type(), t.agency(), t.total()));
             CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY1_HEADERS), linesStream));
+            customLogger.info("Fin del trabajo map/reduce");
         });
     }
 }

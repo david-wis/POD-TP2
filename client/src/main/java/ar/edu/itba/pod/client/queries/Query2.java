@@ -59,12 +59,12 @@ public class Query2 {
                         .reducer(new MaxTypeReducerFactory())
                         .submit(new NeighborhoodQuadTypeMaxCountCollator());
                 List<NeighborhoodQuadTypeMaxCountDTO> result = future2.get();
-                customLogger.info("Fin del trabajo 2 map/reduce");
 
                 final String output = ArgumentParser.getStringArg(OUT_PATH_ARG);
                 final Path outputPath = Paths.get(output, String.format(QUERY_FILE_TEMPLATE, QUERY_NUM));
                 Stream<String> linesStream = result.stream().map(dto -> String.format("%s;%d;%d;%s", dto.neighborhood(), dto.quadLat(), dto.quadLon(), dto.type()));
                 CsvManager.writeLines(outputPath, Stream.concat(Stream.of(QUERY2_HEADERS), linesStream));
+                customLogger.info("Fin del trabajo 2 map/reduce");
             }
             intermediateMap.destroy();
         });
