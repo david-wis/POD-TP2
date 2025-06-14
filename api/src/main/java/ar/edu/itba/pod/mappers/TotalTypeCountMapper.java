@@ -9,12 +9,12 @@ import com.hazelcast.mapreduce.Mapper;
 import static ar.edu.itba.pod.Globals.TYPES_MAP_NAME;
 
 @SuppressWarnings("deprecation")
-public class TotalTypeCountMapper implements Mapper<String, Complaint, String, Boolean>, HazelcastInstanceAware {
+public class TotalTypeCountMapper implements Mapper<String, Complaint, String, Integer>, HazelcastInstanceAware {
     private transient HazelcastInstance hazelcastInstance;
     @Override
-    public void map(String s, Complaint complaint, Context<String, Boolean> context) {
+    public void map(String s, Complaint complaint, Context<String, Integer> context) {
         if (hazelcastInstance.<String, String>getMap(TYPES_MAP_NAME).containsKey(complaint.getType())) {
-            context.emit(complaint.getType(), true);
+            context.emit(complaint.getType(), 1);
         }
     }
 

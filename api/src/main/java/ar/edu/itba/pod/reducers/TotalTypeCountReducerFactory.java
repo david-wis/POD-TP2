@@ -4,27 +4,27 @@ import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
 @SuppressWarnings("deprecation")
-public class TotalTypeCountReducerFactory implements ReducerFactory<String, Boolean, Boolean> {
+public class TotalTypeCountReducerFactory implements ReducerFactory<String, Integer, Integer> {
     @Override
-    public Reducer<Boolean, Boolean> newReducer(String key) {
+    public Reducer<Integer, Integer> newReducer(String key) {
         return new TotalTypeCountReducer();
     }
 
-    private static class TotalTypeCountReducer extends Reducer<Boolean, Boolean> {
-        private boolean exists;
+    private static class TotalTypeCountReducer extends Reducer<Integer, Integer> {
+        private int exists;
 
         @Override
         public void beginReduce() {
-            exists = false;
+            exists = 0;
         }
 
         @Override
-        public void reduce(Boolean value) {
-            exists = true;
+        public void reduce(Integer value) {
+            exists = 1;
         }
 
         @Override
-        public Boolean finalizeReduce() {
+        public Integer finalizeReduce() {
             return exists;
         }
     }
